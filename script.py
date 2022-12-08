@@ -481,6 +481,7 @@ def parse_xml(in_file, out_file):
 
 
 if __name__ == "__main__":
+	os.system("npm install obj2gltf")
 
 	parser = argparse.ArgumentParser()
 	parser.add_argument("-i", "--input", help="Input xml file", required=True)
