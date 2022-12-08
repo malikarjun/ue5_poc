@@ -6,3 +6,5 @@ gltfs
 __pycache__
 *.gltf
 *.hdr
+*.json
+node_modules

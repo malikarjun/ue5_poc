@@ -406,7 +406,7 @@ def obj2gltf(obj_file, shape, xml, out_dir):
 	makedirs(TMP_GLTF_DIR, exist_ok=True)
 
 	out_file = join(TMP_GLTF_DIR, "{}_{}.gltf".format(shape["id"], time.time()))
-	cmd = "obj2gltf -i {in_file} -o {out_file}".format(in_file=obj_file, out_file=out_file)
+	cmd = "node main.js {in_file} {out_file}".format(in_file=obj_file, out_file=out_file)
 	_ = subprocess.check_output(cmd, shell=True)
 
 	gltf = load_gltf(out_file)
