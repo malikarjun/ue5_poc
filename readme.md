@@ -1,7 +1,7 @@
 # xml2gltf
 
 This script can be used to convert xml files of [OptixRenderer](https://github.com/lzqsd/OptixRenderer/) to 
-gltf like files. 
+gltf like files which can be imported into UE5.
 
 ## Prerequisites
 1. Install dependencies
@@ -25,3 +25,5 @@ nvm install 16
 Two files are generated as output in the current working directory. 
 1. scene.gltf
 2. *.hdr file (this is only generated if the scene contains envmap)
+
+Copy both these files and store them in the same directory which can be accessed by Unreal Engine.
