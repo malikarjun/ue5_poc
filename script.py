@@ -149,7 +149,8 @@ def merge_gltf(file1, file2):
 
 	# add extensions
 
-	gltf1.extensions = gltf1.extensions | gltf2.extensions
+	# gltf1.extensions = gltf1.extensions | gltf2.extensions
+	gltf1.extensions = {**gltf1.extensions, **gltf2.extensions}
 	gltf1.extensionsUsed = list(set().union(*[gltf1.extensionsUsed, gltf2.extensionsUsed]))
 	gltf1.extensionsRequired = list(set().union(*[gltf1.extensionsRequired, gltf2.extensionsRequired]))
 
@@ -481,7 +482,7 @@ def parse_xml(in_file, out_file):
 
 
 if __name__ == "__main__":
-	os.system("npm install obj2gltf")
+	_ = subprocess.check_output("npm install obj2gltf", shell=True)
 
 	parser = argparse.ArgumentParser()
 	parser.add_argument("-i", "--input", help="Input xml file", required=True)
