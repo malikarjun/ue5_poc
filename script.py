@@ -1,3 +1,4 @@
+import re
 import time
 import untangle
 import os
@@ -13,8 +14,25 @@ from pygltflib.utils import ImageFormat, Image
 
 
 TMP_GLTF_DIR = "gltfs"
+TMP_IN_FILE = "tmp_in_file.xml"
+
 AREA_LIGHT_EXTENSION = "KHR_lights_area"
 ENV_MAP_EXTENSION = "KHR_lights_environment"
+
+def relative_to_abs_path(content, ref_file):
+	pattern = "<string name=\"filename\" value=\"(.*)\""
+	res = re.search(pattern, content)
+	rel_path = res.group(1)
+
+	if ".." in rel_path:
+		ref_folders = ref_file.split("/")
+		step_outn = len([_fldr for _fldr in rel_path.split("/") if _fldr == ".."])
+
+		abs_dir_path = "/".join(ref_folders[:-(step_outn+1)])
+		rel_dir_path = "/".join([".."] * step_outn)
+		content = content.replace(rel_dir_path, abs_dir_path)
+
+	return content
 
 
 # https://ai.stackexchange.com/questions/14041/how-can-i-derive-the-rotation-matrix-from-the-axis-angle-rotation-vector
@@ -436,8 +454,14 @@ def obj2gltf(obj_file, shape, xml, out_dir):
 
 def parse_xml(in_file, out_file):
 	gltf_files = []
-
 	try:
+
+		with open(in_file, "r") as fin:
+			content = fin.read()
+			with open(TMP_IN_FILE, "w") as fout:
+				fout.write(relative_to_abs_path(content, in_file))
+			in_file = TMP_IN_FILE
+
 		xml = untangle.parse(in_file)
 		for shape in xml.scene.shape:
 			obj_filename = get_elem_val(shape, "string", "name", "filename", "value")
@@ -450,6 +474,7 @@ def parse_xml(in_file, out_file):
 	finally:
 		for gltf_file in gltf_files:
 			os.remove(gltf_file)
+		os.remove(TMP_IN_FILE)
 
 	return gltf
 
