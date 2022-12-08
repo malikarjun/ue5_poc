@@ -2,6 +2,53 @@ from pygltflib import GLTF2
 import numpy as np
 import struct
 
+
+# https://ai.stackexchange.com/questions/14041/how-can-i-derive-the-rotation-matrix-from-the-axis-angle-rotation-vector
+def rotate_mat(axis_angle):
+    k = axis_angle[1:]
+    kx, ky, kz = k
+    angle = np.deg2rad(axis_angle[0])
+
+    ct = np.cos(angle)
+    st = np.sin(angle)
+
+    mat = np.matrix([
+        [ct + kx ** 2 * (1 - ct), kx * ky * (1 - ct) - kz * st, kx * kz * (1 - ct) + ky * st, 0.],
+        [ky * kx * (1 - ct) + kz * st, ct + ky ** 2 * (1 - ct), ky * kz * (1 - ct) - kx * st, 0.],
+        [kz * kx * (1 - ct) - ky * st, kz * ky * (1 - ct) + kx * st, ct + kz ** 2 * (1 - ct), 0.],
+        [0., 0., 0., 1.]
+    ])
+
+    return mat
+
+
+def translate_mat(translate):
+    mat = np.eye(4)
+    for i in range(3):
+        mat[i, 3] = translate[i]
+
+    return mat
+
+
+def scale_mat(scale):
+    mat = np.eye(4)
+    for i in range(3):
+        mat[i, i] = scale[i]
+    return mat
+
+
+def column_order(matrix, dtype="str"):
+    data = []
+    r, c = matrix.shape
+    for j in range(c):
+        for i in range(r):
+            if dtype == "str":
+                data.append("{:.5f}".format(matrix[i, j]))
+            else:
+                data.append(matrix[i, j])
+    return data
+
+
 def load_vertices(filename='gltfs/light.gltf', model_mat=None):
     gltf = GLTF2().load(filename)
 
@@ -38,7 +85,7 @@ def load_vertices(filename='gltfs/light.gltf', model_mat=None):
     return vertices
 
 
-def bounding_box(filename='gltfs/light.gltf', model_mat=None):
+def bounding_box(filename, model_mat=None):
     points = load_vertices(filename=filename, model_mat=model_mat)
 
     min_pt = np.min(points, axis=0)
@@ -47,8 +94,3 @@ def bounding_box(filename='gltfs/light.gltf', model_mat=None):
     radius = (max_pt - min_pt)/2
     return center, radius
 
-if __name__ == '__main__':
-    print(bounding_box())
-
-# (array([-0.00399999, -0.035     ,  0.006     ]), array([0.228, 0.199, 0.228]))
-# TODO: write script to merge them, currently merged in blender

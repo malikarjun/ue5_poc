@@ -4,7 +4,7 @@ import untangle
 import os
 from os import makedirs
 from os.path import basename, dirname, join
-from merge_gltfs import load_gltf, merge_gltfs
+from gltf_utils import load_gltf, merge_gltfs
 import numpy as np
 import shutil
 
@@ -14,9 +14,8 @@ import argparse
 from pygltflib import TextureInfo, Texture, Sampler, Node
 from pygltflib.utils import ImageFormat, Image
 
-from area_light_attr import scale_mat, rotate_mat, translate_mat, column_order
-from load_vertices import bounding_box
-
+from utils import scale_mat, rotate_mat, translate_mat, column_order
+from utils import bounding_box
 
 
 
